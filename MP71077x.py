@@ -82,7 +82,7 @@ class MP71077x:
         return round (x, 2)
     
     ################################################################################################################################################################
-    # VOLTAGE LIMITS
+    # VOLTAGE SETTINGS
     ################################################################################################################################################################
 
     def getUpperVoltageLimit(self):
@@ -124,3 +124,48 @@ class MP71077x:
             response = self.getCVvoltage()
             if response != voltage:
                 raise ConnectionError(f"Can not confirm that CV voltage was properly set!: SET: {voltage}V, but GET: {response}V")
+       
+    ################################################################################################################################################################
+    # CURRENT SETTINGS
+    ################################################################################################################################################################
+
+    def getUpperCurrentLimit(self):
+        if self._verbose:
+            self._printMessage("Asking for upper current limit")
+        limit = self.sendCommand(":CURR:UPP?", True)
+        return float(re.sub(r"[^\d\.]", "", limit))
+    
+    def setUpperCurrentLimit(self, limit: float, verify: bool = False):
+        limit = self.roundTo5ValidDigits(limit)
+        self._printMessage(f"Setting upper current limit to {limit}A")
+        self.sendCommand(":CURR:UPP " + str(limit) + "A")
+
+        if verify == True:
+            response = self.getUpperCurrentLimit()
+            if response != limit:
+                raise ConnectionError(f"Can not confirm that upper current limit was properly set!: SET: {limit}A, but GET: {response}A")
+
+    def getLowerCurrentLimit(self):
+        self._printMessage("Asking for lower current limit")
+        limit = self.sendCommand(":CURR:LOW?", True)
+        return float(re.sub(r"[^\d\.]", "", limit))
+  
+    def getCurrentLimits(self):
+        self._printMessage("Asking for both current limits")
+        return (self.getLowerCurrentLimit(), self.getUpperCurrentLimit())
+    
+    def getCIcurrent(self):
+        self._printMessage("Asking for CI current")
+        cv = self.sendCommand(":CURR?", True)
+        return float(re.sub(r"[^\d\.]", "", cv))
+
+    def setCIcurrent(self, current: float, verify: bool = False):
+        current = self.roundTo5ValidDigits(current)
+        self._printMessage(f"Setting CI current to {current}")
+        self.sendCommand(":CURR " + str(current) + "A")
+        
+        if verify == True:
+            response = self.getCIcurrent()
+            if response != current:
+                raise ConnectionError(f"Can not confirm that CI current was properly set!: SET: {current}V, but GET: {response}V")
+       
