@@ -36,7 +36,7 @@ You should see following output in your terminal:
 ```
 MP71077x(192.168.88.82): Setting CV voltage to 20.0
 MP71077x(192.168.88.82): Asking for CV voltage
-MP71077x(192.168.88.82): Load input has been turned off
+MP71077x(192.168.88.82): Load input has been turned on
 MP71077x(192.168.88.82): Load input has been turned off
 MP71077x(192.168.88.82): Asking for both voltage limits
 MP71077x(192.168.88.82): Asking for lower voltage limit
