@@ -167,5 +167,48 @@ class MP71077x:
         if verify == True:
             response = self.getCIcurrent()
             if response != current:
-                raise ConnectionError(f"Can not confirm that CI current was properly set!: SET: {current}V, but GET: {response}V")
+                raise ConnectionError(f"Can not confirm that CI current was properly set!: SET: {current}A, but GET: {response}A")
        
+    ################################################################################################################################################################
+    # POWER SETTINGS
+    ################################################################################################################################################################
+
+    def getUpperPowerLimit(self):
+        if self._verbose:
+            self._printMessage("Asking for upper power limit")
+        limit = self.sendCommand(":POW:UPP?", True)
+        return float(re.sub(r"[^\d\.]", "", limit))
+    
+    def setUpperPowerLimit(self, limit: float, verify: bool = False):
+        limit = self.roundTo5ValidDigits(limit)
+        self._printMessage(f"Setting upper power limit to {limit}W")
+        self.sendCommand(":POW:UPP " + str(limit) + "W")
+
+        if verify == True:
+            response = self.getUpperPowerLimit()
+            if response != limit:
+                raise ConnectionError(f"Can not confirm that upper power limit was properly set!: SET: {limit}W, but GET: {response}W")
+
+    def getLowerPowerLimit(self):
+        self._printMessage("Asking for lower power limit")
+        limit = self.sendCommand(":POW:LOW?", True)
+        return float(re.sub(r"[^\d\.]", "", limit))
+  
+    def getPowerLimits(self):
+        self._printMessage("Asking for both power limits")
+        return (self.getLowerPowerLimit(), self.getUpperPowerLimit())
+    
+    def getCPpower(self):
+        self._printMessage("Asking for CP power")
+        cv = self.sendCommand(":POW?", True)
+        return float(re.sub(r"[^\d\.]", "", cv))
+
+    def setCPpower(self, power: float, verify: bool = False):
+        power = self.roundTo5ValidDigits(power)
+        self._printMessage(f"Setting CP power to {power}")
+        self.sendCommand(":POW " + str(power) + "W")
+        
+        if verify == True:
+            response = self.getCPpower()
+            if response != power:
+                raise ConnectionError(f"Can not confirm that CP power was properly set!: SET: {power}W, but GET: {response}W")
