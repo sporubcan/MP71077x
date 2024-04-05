@@ -1,5 +1,5 @@
 # MP71077x
-Python library for controlling Multicomp MP71077x and Korad KEL20x0 electronic loads over Ethernet
+An UNOFFICIAL Python library for controlling Multicomp MP71077x and Korad KEL20x0 electronic loads over Ethernet
 
 ### Works with:
 - Multicomp MP710772 (150V/40A/500W), tested on Windows 11 machine with Python 3.12.2
