@@ -55,7 +55,7 @@ class MP71077x:
             response = self.sendCommand(":INP?", True)
             if "ON" not in response:
                 raise ConnectionError("Can not verify if load was turned on properly!")
-            self._printMessage("Load input has been turned off")
+            self._printMessage("Load input has been turned on")
             return
         self._printMessage("Load turn on command has been send.")
 
@@ -212,3 +212,47 @@ class MP71077x:
             response = self.getCPpower()
             if response != power:
                 raise ConnectionError(f"Can not confirm that CP power was properly set!: SET: {power}W, but GET: {response}W")
+
+    ################################################################################################################################################################
+    # RESISTANCE SETTINGS
+    ################################################################################################################################################################
+
+    def getUpperResistanceLimit(self):
+        if self._verbose:
+            self._printMessage("Asking for upper resistance limit")
+        limit = self.sendCommand(":RES:UPP?", True)
+        return float(re.sub(r"[^\d\.]", "", limit))
+    
+    def setUpperResistanceLimit(self, limit: float, verify: bool = False):
+        limit = self.roundTo5ValidDigits(limit)
+        self._printMessage(f"Setting upper resistance limit to {limit}OHM")
+        self.sendCommand(":RES:UPP " + str(limit) + "OHM")
+
+        if verify == True:
+            response = self.getUpperResistanceLimit()
+            if response != limit:
+                raise ConnectionError(f"Can not confirm that upper resistance limit was properly set!: SET: {limit}OHM, but GET: {response}OHM")
+
+    def getLowerResistanceLimit(self):
+        self._printMessage("Asking for lower resistance limit")
+        limit = self.sendCommand(":RES:LOW?", True)
+        return float(re.sub(r"[^\d\.]", "", limit))
+  
+    def getResistanceLimits(self):
+        self._printMessage("Asking for both resistance limits")
+        return (self.getLowerResistanceLimit(), self.getUpperResistanceLimit())
+    
+    def getCRresistance(self):
+        self._printMessage("Asking for CP resistance")
+        cp = self.sendCommand(":RES?", True)
+        return float(re.sub(r"[^\d\.]", "", cp))
+
+    def setCRresistance(self, resistance: float, verify: bool = False):
+        resistance = self.roundTo5ValidDigits(resistance)
+        self._printMessage(f"Setting CP resistance to {resistance}")
+        self.sendCommand(":RES " + str(resistance) + "OHM")
+        
+        if verify == True:
+            response = self.getCRresistance()
+            if response != resistance:
+                raise ConnectionError(f"Can not confirm that CP resistance was properly set!: SET: {resistance}OHM, but GET: {response}OHM")
