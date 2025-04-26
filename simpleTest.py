@@ -1,7 +1,14 @@
+#!/usr/bin/env python3
+
 import MP71077x
 import time
+from sys import argv
 
-load = MP71077x.MP71077x("192.168.88.80", "192.168.88.82", verbosity=True)
+if len(argv) < 2:
+    print("Usage: python simpleTest.py <address>")
+    exit(0)
+address = argv[1]
+load = MP71077x.MP71077x(target_ip = address, verbosity=True)
 load.openSocket()
 
 load.setUpperVoltageLimit(30.00)

@@ -15,7 +15,7 @@ class MP71077x:
 
     _verbose = False
 
-    def __init__(self, source_ip: ipaddress.IPv4Address, target_ip: ipaddress.IPv4Address, port: int = 18190, timeout: float = 0.2, verbosity: bool = False):
+    def __init__(self, target_ip: ipaddress.IPv4Address, source_ip: ipaddress.IPv4Address = None, port: int = 18190, timeout: float = 0.5, verbosity: bool = False):
         self._target_ip = target_ip
         self._source_ip = source_ip
         self._port = port
@@ -25,7 +25,11 @@ class MP71077x:
 
     def openSocket(self):
         self._udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._udp_socket.bind((self._source_ip, self._port))
+        bind_ip = self._source_ip if self._source_ip else '0.0.0.0'
+        try:
+            self._udp_socket.bind((bind_ip, self._port))
+        except OSError as e:
+            raise ConnectionError(f"Failed to bind to {bind_ip}: {e}")
         self._udp_socket.settimeout(self._timeout)
 
     def closeSocket(self):

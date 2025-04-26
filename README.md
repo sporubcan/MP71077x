@@ -14,13 +14,12 @@ An UNOFFICIAL Python library for controlling Multicomp MP71077x and Korad KEL20x
 
 1. Install recent colorama (for colorized debug outputs) - `pip3 install colorama`
 2. Set proper IP address, netmask and gateway on your electronic load (since I had problems when enabling DHCP client on my load). If your network uses DHCP server, create some small address region with reserved IP range and set IP adress of your load to any value in this reserved range.
-3. Try to ping the device (must be turned on!) from command line using `ping` command with device IP following. You should get response, if your device network settings are OK.
-4. Get your computer IP address. In current version of our library you have to enter it as `sourceIP` parameter in `MP71077x` class constructor to make everything working well. Your code should look somehow like this:
+3. Try to ping the device (must be turned on!) from command line using `ping` command with device IP following. You should get response, if your device network settings are OK. Your code should look somehow like this:
 ```
 import MP71077x
 import time
 
-load = MP71077x.MP71077x("192.168.88.80", "192.168.88.82", verbosity=True)
+load = MP71077x.MP71077x("192.168.88.82", verbosity=True)
 load.openSocket()
 
 load.setCVvoltage(20.000, True)
